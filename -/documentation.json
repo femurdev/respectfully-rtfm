@@ -1,0 +1,1298 @@
+{
+  "html_exporter.py": {
+    "file": "html_exporter.py",
+    "docstring": null,
+    "constants": [],
+    "classes": [
+      {
+        "name": "HTMLExporter",
+        "bases": [],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "render",
+            "fqn": "HTMLExporter.render",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Render the documentation as an HTML string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Render the documentation as an HTML string.",
+              "summary": "Render the documentation as an HTML string.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "HTMLExporter"
+          },
+          {
+            "name": "save",
+            "fqn": "HTMLExporter.save",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "output_dir",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Save the rendered HTML to a file.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Save the rendered HTML to a file.",
+              "summary": "Save the rendered HTML to a file.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "HTMLExporter"
+          }
+        ]
+      },
+      {
+        "name": "HTMLExporter",
+        "bases": [],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "render",
+            "fqn": "HTMLExporter.render",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Render the documentation as an HTML string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Render the documentation as an HTML string.",
+              "summary": "Render the documentation as an HTML string.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "HTMLExporter"
+          },
+          {
+            "name": "save",
+            "fqn": "HTMLExporter.save",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "output_dir",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Save the rendered HTML to a file.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Save the rendered HTML to a file.",
+              "summary": "Save the rendered HTML to a file.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "HTMLExporter"
+          }
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "debug_test_case_nested.py": {
+    "file": "debug_test_case_nested.py",
+    "docstring": "This test case validates the handling of nested structures.",
+    "constants": [],
+    "classes": [
+      {
+        "name": "OuterClass",
+        "bases": [],
+        "docstring": "An outer class.\n\nAttributes:\n    outer_attr (str): An attribute of the outer class.",
+        "methods": []
+      }
+    ],
+    "functions": [
+      {
+        "name": "outer_function",
+        "fqn": "outer_function",
+        "signature": [],
+        "returns": null,
+        "docstring": "An outer function.\n\nReturns:\n    int: Always returns 1.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "An outer function.\n\nReturns:\n    int: Always returns 1.",
+          "summary": "An outer function.",
+          "description": "Returns:\n    int: Always returns 1."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "minimal_test.py": {
+    "file": "minimal_test.py",
+    "docstring": "Minimal test Python file.",
+    "constants": [],
+    "classes": [
+      {
+        "name": "MinimalClass",
+        "bases": [],
+        "docstring": "A minimal class for testing.\n\nAttributes:\n    attr1 (int): A sample attribute.",
+        "methods": [
+          {
+            "name": "method",
+            "fqn": "MinimalClass.method",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "A sample method.\n\nReturns:\n    str: A sample string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "A sample method.\n\nReturns:\n    str: A sample string.",
+              "summary": "A sample method.",
+              "description": "Returns:\n    str: A sample string."
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "MinimalClass"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "minimal_function",
+        "fqn": "minimal_function",
+        "signature": [],
+        "returns": null,
+        "docstring": "A minimal function for testing.\n\nReturns:\n    bool: True, always.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "A minimal function for testing.\n\nReturns:\n    bool: True, always.",
+          "summary": "A minimal function for testing.",
+          "description": "Returns:\n    bool: True, always."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "docgen.py": {
+    "file": "docgen.py",
+    "docstring": "",
+    "constants": [],
+    "classes": [
+      {
+        "name": "SignatureBuilder",
+        "bases": [],
+        "docstring": "Construct a simple serializable representation of function signatures\n\nDoes NOT evaluate defaults/annotations; represents them using ast_unparse.",
+        "methods": [
+          {
+            "name": "format_arguments",
+            "fqn": "SignatureBuilder.format_arguments",
+            "signature": [
+              {
+                "name": "args",
+                "annotation": "ast.arguments",
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": "List[Dict[str, Any]]",
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [
+              "staticmethod"
+            ],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": true,
+            "is_classmethod": false,
+            "method_of": "SignatureBuilder"
+          }
+        ]
+      },
+      {
+        "name": "DocVisitor",
+        "bases": [
+          "ast.NodeVisitor"
+        ],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "visit_Module",
+            "fqn": "DocVisitor.visit_Module",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "node",
+                "annotation": "ast.Module",
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocVisitor"
+          },
+          {
+            "name": "visit_ClassDef",
+            "fqn": "DocVisitor.visit_ClassDef",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "node",
+                "annotation": "ast.ClassDef",
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocVisitor"
+          },
+          {
+            "name": "visit_FunctionDef",
+            "fqn": "DocVisitor.visit_FunctionDef",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "node",
+                "annotation": "ast.FunctionDef",
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocVisitor"
+          },
+          {
+            "name": "visit_AsyncFunctionDef",
+            "fqn": "DocVisitor.visit_AsyncFunctionDef",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "node",
+                "annotation": "ast.AsyncFunctionDef",
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocVisitor"
+          }
+        ]
+      },
+      {
+        "name": "DocGenerator",
+        "bases": [],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "parse",
+            "fqn": "DocGenerator.parse",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": "Dict[str, Any]",
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocGenerator"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "is_dunder",
+        "fqn": "is_dunder",
+        "signature": [
+          {
+            "name": "name",
+            "annotation": "str",
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": "bool",
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "should_include",
+        "fqn": "should_include",
+        "signature": [
+          {
+            "name": "name",
+            "annotation": "str",
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "include_private",
+            "annotation": "bool",
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": "bool",
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "safe_repr_constant",
+        "fqn": "safe_repr_constant",
+        "signature": [
+          {
+            "name": "node",
+            "annotation": "ast.AST",
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": "Optional[str]",
+        "docstring": "Return a repr-like string for simple literal AST nodes, else None.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "Return a repr-like string for simple literal AST nodes, else None.",
+          "summary": "Return a repr-like string for simple literal AST nodes, else None.",
+          "description": ""
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "parse_file",
+        "fqn": "parse_file",
+        "signature": [
+          {
+            "name": "path",
+            "annotation": "str",
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "include_private",
+            "annotation": "bool",
+            "default": "False",
+            "kind": "positional"
+          },
+          {
+            "name": "style",
+            "annotation": "str",
+            "default": "'auto'",
+            "kind": "positional"
+          }
+        ],
+        "returns": "Optional[Dict[str, Any]]",
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "live_web_server.py": {
+    "file": "live_web_server.py",
+    "docstring": "",
+    "constants": [
+      {
+        "name": "HTML_TEMPLATE",
+        "value": "'\\n<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n    <meta charset=\"UTF-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\\n    <title>Python Documentation</title>\\n    <style>\\n        :root { --bg: #f4f4f9; --text: #333; --accent: #007BFF; --card: #fff; }\\n        [data-theme=\"dark\"] { --bg: #0f1115; --text: #ddd; --accent: #4ea1ff; --card: #111216; }\\n        body { font-family: Arial, sans-serif; line-height: 1.6; background-color: var(--bg); color: var(--text); }\\n        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }\\n        .module-list { display: flex; flex-wrap: wrap; gap: 8px; }\\n        .module { background: var(--card); padding: 10px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; min-width: 200px }\\n        .search { margin-bottom: 12px; padding:6px; width: 60%; }\\n        pre { white-space: pre-wrap; word-break: break-word; background: var(--card); padding: 10px; border: 1px solid #ddd; }\\n        .controls { display:flex; gap:8px; margin-bottom:12px; align-items:center }\\n        button { cursor:pointer; }\\n        .snippet { color: #666; font-size: 0.9em; margin-top:6px }\\n    </style>\\n</head>\\n<body data-theme=\"{{ theme }}\">\\n    <div class=\"container\">\\n        <h1>Python Documentation</h1>\\n        <div class=\"controls\">\\n            <input id=\"search\" class=\"search\" placeholder=\"Search modules, classes, functions...\" />\\n            <select id=\"theme-select\"><option value=\"light\">Light</option><option value=\"dark\">Dark</option></select>\\n        </div>\\n        <div id=\"modules\" class=\"module-list\"></div>\\n        <hr />\\n        <div id=\"module-detail\"></div>\\n        <script type=\"application/json\" id=\"modules-json\">{{ modules_json|safe }}</script>\\n        <script type=\"text/plain\" id=\"last-ts\">{{ last_ts }}</script>\\n        <script>\\n            document.addEventListener(\\'DOMContentLoaded\\', function(){\\n                // modules is an array of module metadata objects {key,file,snippet,type}\\n                let modules = JSON.parse(document.getElementById(\\'modules-json\\').textContent || \\'[]\\');\\n                const modulesListElem = document.getElementById(\\'modules\\');\\n                const moduleDetail = document.getElementById(\\'module-detail\\');\\n                const search = document.getElementById(\\'search\\');\\n                const themeSelect = document.getElementById(\\'theme-select\\');\\n\\n                themeSelect.value = \\'{{ theme }}\\';\\n                themeSelect.addEventListener(\\'change\\', () => {\\n                    document.body.setAttribute(\\'data-theme\\', themeSelect.value === \\'dark\\' ? \\'dark\\' : \\'light\\');\\n                });\\n\\n                function renderList(items) {\\n                    modulesListElem.innerHTML = \\'\\';\\n                    (items || []).forEach(item => {\\n                        const el = document.createElement(\\'div\\');\\n                        el.className = \\'module\\';\\n                        const title = document.createElement(\\'div\\');\\n                        title.textContent = item.key;\\n                        el.appendChild(title);\\n                        if (item.snippet) {\\n                            const s = document.createElement(\\'div\\'); s.className = \\'snippet\\'; s.textContent = item.snippet; el.appendChild(s);\\n                        }\\n                        el.onclick = () => loadModule(item.key);\\n                        modulesListElem.appendChild(el);\\n                    });\\n                }\\n\\n                function renderModule(doc) {\\n                    moduleDetail.innerHTML = \\'\\';\\n                    const h = document.createElement(\\'h2\\');\\n                    h.textContent = doc.file || \\'untitled\\';\\n                    moduleDetail.appendChild(h);\\n                    if (doc.docstring) {\\n                        const p = document.createElement(\\'pre\\'); p.textContent = doc.docstring; moduleDetail.appendChild(p);\\n                    }\\n                    if (doc.constants && doc.constants.length) {\\n                        const c = document.createElement(\\'div\\'); c.innerHTML = \\'<h3>Constants</h3>\\'; moduleDetail.appendChild(c);\\n                        const ul = document.createElement(\\'ul\\');\\n                        doc.constants.forEach(x => { const li = document.createElement(\\'li\\'); li.textContent = `${x.name} = ${x.value}`; ul.appendChild(li); });\\n                        moduleDetail.appendChild(ul);\\n                    }\\n                    if (doc.classes && doc.classes.length) {\\n                        const cl = document.createElement(\\'div\\'); cl.innerHTML = \\'<h3>Classes</h3>\\'; moduleDetail.appendChild(cl);\\n                        doc.classes.forEach(cls => {\\n                            const s = document.createElement(\\'div\\'); s.innerHTML = `<h4>${cls.name}</h4>`;\\n                            if (cls.docstring) { const pre = document.createElement(\\'pre\\'); pre.textContent = cls.docstring; s.appendChild(pre); }\\n                            if (cls.methods && cls.methods.length) {\\n                                const ml = document.createElement(\\'ul\\');\\n                                cls.methods.forEach(m => { const li = document.createElement(\\'li\\'); li.textContent = m.fqn + formatSig(m.signature); ml.appendChild(li); });\\n                                s.appendChild(ml);\\n                            }\\n                            moduleDetail.appendChild(s);\\n                        });\\n                    }\\n                    if (doc.functions && doc.functions.length) {\\n                        const fl = document.createElement(\\'div\\'); fl.innerHTML = \\'<h3>Functions</h3>\\'; moduleDetail.appendChild(fl);\\n                        const ul = document.createElement(\\'ul\\');\\n                        doc.functions.forEach(fn => { const li = document.createElement(\\'li\\'); li.textContent = fn.fqn + formatSig(fn.signature); ul.appendChild(li); });\\n                        moduleDetail.appendChild(ul);\\n                    }\\n                }\\n\\n                function formatSig(sig) {\\n                    if (!sig) return \\'()\\';\\n                    return \\'(\\' + sig.map(p => (p.kind===\\'vararg\\' ? \\'*\\' : p.kind===\\'varkw\\' ? \\'**\\' : \\'\\') + p.name + (p.annotation ? \\': \\'+p.annotation : \\'\\') + (p.default ? \\'=\\'+p.default : \\'\\')).join(\\', \\') + \\')\\';\\n                }\\n\\n                async function loadModule(name) {\\n                    try {\\n                        const resp = await fetch(`/module/${encodeURIComponent(name)}`);\\n                        if (!resp.ok) { moduleDetail.innerHTML = \\'<p>Error loading module</p>\\'; return; }\\n                        const payload = await resp.json();\\n                        renderModule(payload.doc);\\n                    } catch (e) { moduleDetail.innerHTML = \\'<p>Error loading module</p>\\'; }\\n                }\\n\\n                // Debounced search using server-side /search endpoint for scalability\\n                let debounceTimer = null;\\n                async function doSearch(q) {\\n                    try {\\n                        const r = await fetch(\\'/search?q=\\' + encodeURIComponent(q || \\'\\'));\\n                        if (!r.ok) return;\\n                        const j = await r.json();\\n                        // j.results is an array of metadata objects\\n                        renderList(j.results);\\n                    } catch (e) { console.debug(\\'search failed\\', e); }\\n                }\\n                search.addEventListener(\\'input\\', (e) => {\\n                    clearTimeout(debounceTimer);\\n                    debounceTimer = setTimeout(() => doSearch(search.value), 250);\\n                });\\n\\n                // initial render\\n                renderList(modules);\\n\\n                // Poll for updates and refresh module list minimally\\n                let lastTs = Number(document.getElementById(\\'last-ts\\').textContent) || 0;\\n                async function poll() {\\n                    try {\\n                        const r = await fetch(`/summary?ts=${lastTs}`);\\n                        const j = await r.json();\\n                        if (j.updated) {\\n                            const m = await fetch(\\'/modules\\');\\n                            const mm = await m.json();\\n                            modules = mm.modules || [];\\n                            lastTs = mm.timestamp || Date.now()/1000;\\n                            renderList(modules);\\n                        }\\n                    } catch (e) { console.debug(\\'poll failed\\', e); }\\n                }\\n                setInterval(poll, 5000);\\n            });\\n        </script>\\n    </div>\\n</body>\\n</html>\\n'"
+      }
+    ],
+    "classes": [
+      {
+        "name": "DocCache",
+        "bases": [],
+        "docstring": "Thread-safe documentation cache with robust mtime fingerprinting.\n\nAlso maintains a simple inverted index for quick search over module names,\nclass/function names and docstrings.",
+        "methods": [
+          {
+            "name": "compute_mtime_fingerprint",
+            "fqn": "DocCache.compute_mtime_fingerprint",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocCache"
+          },
+          {
+            "name": "scan_and_update",
+            "fqn": "DocCache.scan_and_update",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Scan for changes and update docs if needed.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Scan for changes and update docs if needed.",
+              "summary": "Scan for changes and update docs if needed.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocCache"
+          },
+          {
+            "name": "search",
+            "fqn": "DocCache.search",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "query",
+                "annotation": "str",
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "limit",
+                "annotation": "int",
+                "default": "200",
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Return ordered list of result objects matching the query using the inverted index.\n\nEach result is a dict: {key, file, snippet, type}.\nThe query is split into tokens, each token is matched against index keys\nby prefix. The result is modules that match all query tokens (AND).",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Return ordered list of result objects matching the query using the inverted index.\n\nEach result is a dict: {key, file, snippet, type}.\nThe query is split into tokens, each token is matched against index keys\nby prefix. The result is modules that match all query tokens (AND).",
+              "summary": "Return ordered list of result objects matching the query using the inverted index.",
+              "description": "Each result is a dict: {key, file, snippet, type}.\nThe query is split into tokens, each token is matched against index keys\nby prefix. The result is modules that match all query tokens (AND)."
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "DocCache"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "start_server",
+        "fqn": "start_server",
+        "signature": [
+          {
+            "name": "path",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "host",
+            "annotation": null,
+            "default": "'127.0.0.1'",
+            "kind": "positional"
+          },
+          {
+            "name": "port",
+            "annotation": null,
+            "default": "5000",
+            "kind": "positional"
+          },
+          {
+            "name": "include_private",
+            "annotation": null,
+            "default": "False",
+            "kind": "positional"
+          },
+          {
+            "name": "style",
+            "annotation": null,
+            "default": "'auto'",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "test_fpdf.py": {
+    "file": "test_fpdf.py",
+    "docstring": null,
+    "constants": [],
+    "classes": [],
+    "functions": []
+  },
+  "utils.py": {
+    "file": "utils.py",
+    "docstring": null,
+    "constants": [],
+    "classes": [],
+    "functions": [
+      {
+        "name": "is_text_file",
+        "fqn": "is_text_file",
+        "signature": [
+          {
+            "name": "file_path",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "blocksize",
+            "annotation": null,
+            "default": "4096",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": "Check if a file is a text file by reading a small block.\n\nThis avoids loading entire files into memory for large files and\nis more efficient than reading the whole file.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "Check if a file is a text file by reading a small block.\n\nThis avoids loading entire files into memory for large files and\nis more efficient than reading the whole file.",
+          "summary": "Check if a file is a text file by reading a small block.",
+          "description": "This avoids loading entire files into memory for large files and\nis more efficient than reading the whole file."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "log_error",
+        "fqn": "log_error",
+        "signature": [
+          {
+            "name": "file_path",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "error",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": "Log errors with details to the configured logger.\n\nAccepts a file_path (or other identifier) and an exception or message.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "Log errors with details to the configured logger.\n\nAccepts a file_path (or other identifier) and an exception or message.",
+          "summary": "Log errors with details to the configured logger.",
+          "description": "Accepts a file_path (or other identifier) and an exception or message."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "generate_error_summary",
+        "fqn": "generate_error_summary",
+        "signature": [
+          {
+            "name": "errors",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": "Generate a summary for skipped files and errors.\n\n`errors` should be an iterable of (file_path, error_message) tuples.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "Generate a summary for skipped files and errors.\n\n`errors` should be an iterable of (file_path, error_message) tuples.",
+          "summary": "Generate a summary for skipped files and errors.",
+          "description": "`errors` should be an iterable of (file_path, error_message) tuples."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "test_file.py": {
+    "file": "test_file.py",
+    "docstring": "Test Python file for documentation generator.",
+    "constants": [],
+    "classes": [
+      {
+        "name": "TestClass",
+        "bases": [],
+        "docstring": "This is a test class.\n\nAttributes:\n    attr1 (str): Description of attr1.",
+        "methods": [
+          {
+            "name": "method",
+            "fqn": "TestClass.method",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "A test method.\n\nReturns:\n    str: A test string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "A test method.\n\nReturns:\n    str: A test string.",
+              "summary": "A test method.",
+              "description": "Returns:\n    str: A test string."
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "TestClass"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "test_function",
+        "fqn": "test_function",
+        "signature": [],
+        "returns": null,
+        "docstring": "A test function.\n\nReturns:\n    bool: True, always.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "A test function.\n\nReturns:\n    bool: True, always.",
+          "summary": "A test function.",
+          "description": "Returns:\n    bool: True, always."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "pdf_exporter.py": {
+    "file": "pdf_exporter.py",
+    "docstring": null,
+    "constants": [],
+    "classes": [
+      {
+        "name": "PDFExporter",
+        "bases": [],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "render",
+            "fqn": "PDFExporter.render",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Generate PDF content from documentation.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Generate PDF content from documentation.",
+              "summary": "Generate PDF content from documentation.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "PDFExporter"
+          },
+          {
+            "name": "save",
+            "fqn": "PDFExporter.save",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "output_dir",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "Save the PDF to the specified directory.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "Save the PDF to the specified directory.",
+              "summary": "Save the PDF to the specified directory.",
+              "description": ""
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "PDFExporter"
+          }
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "watcher.py": {
+    "file": "watcher.py",
+    "docstring": null,
+    "constants": [],
+    "classes": [
+      {
+        "name": "Watcher",
+        "bases": [],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "run",
+            "fqn": "Watcher.run",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "Watcher"
+          }
+        ]
+      },
+      {
+        "name": "Handler",
+        "bases": [
+          "FileSystemEventHandler"
+        ],
+        "docstring": null,
+        "methods": [
+          {
+            "name": "on_modified",
+            "fqn": "Handler.on_modified",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              },
+              {
+                "name": "event",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": null,
+            "parsed_doc": null,
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "Handler"
+          }
+        ]
+      }
+    ],
+    "functions": []
+  },
+  "debug_test_case.py": {
+    "file": "debug_test_case.py",
+    "docstring": "This is a debug test case to validate specific edge cases for the documentation generator.",
+    "constants": [
+      {
+        "name": "global_constant",
+        "value": "42"
+      }
+    ],
+    "classes": [
+      {
+        "name": "SampleClass",
+        "bases": [],
+        "docstring": "A sample class for testing.\n\nAttributes:\n    attribute (str): A sample attribute.",
+        "methods": [
+          {
+            "name": "method_with_decorator",
+            "fqn": "SampleClass.method_with_decorator",
+            "signature": [
+              {
+                "name": "self",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "A method with a decorator.\n\nReturns:\n    str: A sample string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "A method with a decorator.\n\nReturns:\n    str: A sample string.",
+              "summary": "A method with a decorator.",
+              "description": "Returns:\n    str: A sample string."
+            },
+            "decorators": [],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": false,
+            "method_of": "SampleClass"
+          },
+          {
+            "name": "static_method",
+            "fqn": "SampleClass.static_method",
+            "signature": [],
+            "returns": null,
+            "docstring": "A static method.\n\nReturns:\n    str: A static string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "A static method.\n\nReturns:\n    str: A static string.",
+              "summary": "A static method.",
+              "description": "Returns:\n    str: A static string."
+            },
+            "decorators": [
+              "staticmethod"
+            ],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": true,
+            "is_classmethod": false,
+            "method_of": "SampleClass"
+          },
+          {
+            "name": "class_method",
+            "fqn": "SampleClass.class_method",
+            "signature": [
+              {
+                "name": "cls",
+                "annotation": null,
+                "default": null,
+                "kind": "positional"
+              }
+            ],
+            "returns": null,
+            "docstring": "A class method.\n\nReturns:\n    str: A class string.",
+            "parsed_doc": {
+              "style": "plain",
+              "raw": "A class method.\n\nReturns:\n    str: A class string.",
+              "summary": "A class method.",
+              "description": "Returns:\n    str: A class string."
+            },
+            "decorators": [
+              "classmethod"
+            ],
+            "is_async": false,
+            "is_property": false,
+            "is_staticmethod": false,
+            "is_classmethod": true,
+            "method_of": "SampleClass"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "function_with_no_docstring",
+        "fqn": "function_with_no_docstring",
+        "signature": [],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "function_with_complex_signature",
+        "fqn": "function_with_complex_signature",
+        "signature": [
+          {
+            "name": "param1",
+            "annotation": "int",
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "param2",
+            "annotation": "str",
+            "default": "'default'",
+            "kind": "positional"
+          },
+          {
+            "name": "args",
+            "annotation": null,
+            "default": null,
+            "kind": "vararg"
+          },
+          {
+            "name": "kwargs",
+            "annotation": null,
+            "default": null,
+            "kind": "varkw"
+          }
+        ],
+        "returns": null,
+        "docstring": "Function with complex signature.\n\nArgs:\n    param1 (int): The first parameter.\n    param2 (str): The second parameter with a default value.\n\nReturns:\n    bool: Always returns True.",
+        "parsed_doc": {
+          "style": "google",
+          "raw": "Function with complex signature.\n\nArgs:\n    param1 (int): The first parameter.\n    param2 (str): The second parameter with a default value.\n\nReturns:\n    bool: Always returns True.",
+          "summary": "Function with complex signature.",
+          "description": null,
+          "params": [
+            {
+              "name": "param1",
+              "type": "int",
+              "desc": "param2 (str): The second parameter with a default value."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "desc": ""
+          },
+          "raises": [],
+          "examples": null,
+          "attributes": []
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  },
+  "pydocgen.py": {
+    "file": "pydocgen.py",
+    "docstring": "Single entrypoint CLI for the documentation generator.\n\nUsage examples:\n  python3 pydocgen.py --path . --format json\n  python3 pydocgen.py --path mypkg --format web\n  python3 pydocgen.py --path file.py --format md --output docs\n\nThis script dispatches to DocGenerator for parsing and to exporters or the\nlive web server when requested. When --output is omitted for export formats,\noutput is printed to stdout.",
+    "constants": [],
+    "classes": [],
+    "functions": [
+      {
+        "name": "dump_json",
+        "fqn": "dump_json",
+        "signature": [
+          {
+            "name": "docs",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "output_dir",
+            "annotation": null,
+            "default": "None",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "dump_md",
+        "fqn": "dump_md",
+        "signature": [
+          {
+            "name": "docs",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "output_dir",
+            "annotation": null,
+            "default": "None",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": "Generate a simple markdown document from docs.\n\nAccepts either a mapping (module -> doc) or a list of doc dicts. If\noutput_dir is provided, writes documentation.md into that directory.\nOtherwise prints to stdout.",
+        "parsed_doc": {
+          "style": "plain",
+          "raw": "Generate a simple markdown document from docs.\n\nAccepts either a mapping (module -> doc) or a list of doc dicts. If\noutput_dir is provided, writes documentation.md into that directory.\nOtherwise prints to stdout.",
+          "summary": "Generate a simple markdown document from docs.",
+          "description": "Accepts either a mapping (module -> doc) or a list of doc dicts. If\noutput_dir is provided, writes documentation.md into that directory.\nOtherwise prints to stdout."
+        },
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "format_signature",
+        "fqn": "format_signature",
+        "signature": [
+          {
+            "name": "sig_parts",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "start_web",
+        "fqn": "start_web",
+        "signature": [
+          {
+            "name": "path",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "include_private",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "style",
+            "annotation": null,
+            "default": null,
+            "kind": "positional"
+          },
+          {
+            "name": "host",
+            "annotation": null,
+            "default": "'127.0.0.1'",
+            "kind": "positional"
+          },
+          {
+            "name": "port",
+            "annotation": null,
+            "default": "5000",
+            "kind": "positional"
+          },
+          {
+            "name": "interval",
+            "annotation": null,
+            "default": "5.0",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      },
+      {
+        "name": "main",
+        "fqn": "main",
+        "signature": [
+          {
+            "name": "argv",
+            "annotation": null,
+            "default": "None",
+            "kind": "positional"
+          }
+        ],
+        "returns": null,
+        "docstring": null,
+        "parsed_doc": null,
+        "decorators": [],
+        "is_async": false,
+        "is_property": false,
+        "is_staticmethod": false,
+        "is_classmethod": false
+      }
+    ]
+  }
+}
