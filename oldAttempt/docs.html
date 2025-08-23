@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RTFM — Documentation Viewer</title>
+<style>
+  :root{
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-2: #7c3aed;
+    --text: #0f172a;
+    --border: #e6e9ef;
+    --mark: #fff59d;
+    --shadow: 0 6px 24px rgba(12,18,30,0.06);
+  }
+  [data-theme="dark"]{
+    --bg: #0b1020;
+    --panel: #0f1724;
+    --muted: #98a0b2;
+    --accent: #60a5fa;
+    --accent-2: #b794f4;
+    --text: #e6eef8;
+    --border: #1f2937;
+    --mark: #7c5b00;
+    --shadow: 0 6px 24px rgba(2,6,23,0.6);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:var(--bg); color:var(--text);}
+  .app{display:flex; height:100vh; gap:18px; padding:18px; box-sizing:border-box;}
+  .sidebar{
+    width:320px; min-width:220px; max-width:38%;
+    background:var(--panel); border-radius:12px; padding:12px; box-shadow:var(--shadow);
+    border:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden;
+  }
+  .search{display:flex; gap:8px; align-items:center; padding:8px;}
+  .search input{flex:1; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:transparent;color:var(--text); outline:none; font-size:14px;}
+  .btn{background:transparent;border:1px solid var(--border); color:var(--muted); padding:8px 10px;border-radius:8px; cursor:pointer;}
+  .btn.active{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; border-color:transparent;}
+  .controls{display:flex; gap:8px; align-items:center; margin-left:6px;}
+  .list{overflow:auto; padding:6px 6px 12px 6px;}
+  .item{padding:10px;border-radius:10px; cursor:pointer; display:block; text-decoration:none; color:inherit; margin-bottom:8px; border:1px solid transparent;}
+  .item:hover{background:linear-gradient(90deg, rgba(37,99,235,0.06), rgba(124,58,237,0.03)); border-color:rgba(37,99,235,0.06);}
+  .item.active{box-shadow:var(--shadow); border-color:var(--border); background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);}
+  .title{font-weight:600; font-size:15px; margin-bottom:6px;}
+  .meta{font-size:13px; color:var(--muted);}
+  .preview{font-size:13px; color:var(--muted); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column; gap:12px;}
+  .topbar{display:flex; align-items:center; gap:12px;}
+  .page-card{background:var(--panel); border-radius:12px; padding:18px; border:1px solid var(--border); box-shadow:var(--shadow); overflow:auto; flex:1;}
+  .page-title{margin:0 0 8px 0; display:flex; align-items:center; gap:12px;}
+  .page-title h1{margin:0; font-size:20px;}
+  .badge{padding:4px 8px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; font-size:12px;}
+  .empty{color:var(--muted); font-size:15px; text-align:center; padding:48px 12px;}
+  mark{background:var(--mark); padding:0 2px; border-radius:3px; color:inherit;}
+  pre{background:#0b1220;color:#dbeafe;padding:12px;border-radius:8px;overflow:auto}
+  code{background:#0b1220;color:#dbeafe;padding:2px 6px;border-radius:6px}
+  .toolbar{margin-left:auto; display:flex; gap:8px;}
+  .small{font-size:13px;color:var(--muted)}
+  @media (max-width:900px){
+    .app{flex-direction:column;padding:12px;}
+    .sidebar{width:100%; max-width:none; order:2;}
+    .main{order:1;}
+  }
+</style>
+</head>
+<body data-theme="light">
+<div class="app" role="application" aria-label="Docs app">
+  <aside class="sidebar" aria-label="Sidebar">
+    <div class="search">
+      <input id="search" type="search" placeholder="Search titles & content (press /)" aria-label="Search" />
+      <div class="controls">
+        <button id="themeToggle" class="btn" title="Toggle theme">🌙</button>
+        <button id="clearSearch" class="btn" title="Clear search">✕</button>
+      </div>
+    </div>
+    <div id="list" class="list" role="list"></div>
+  </aside>
+
+  <main class="main" aria-live="polite">
+    <div class="topbar">
+      <div class="small">Single-file interactive docs — native HTML content</div>
+      <div class="toolbar">
+        <button id="prevBtn" class="btn" title="Previous">◀</button>
+        <button id="nextBtn" class="btn" title="Next">▶</button>
+        <button id="copyLink" class="btn" title="Copy page link">🔗 Copy Link</button>
+        <button id="copyHtml" class="btn" title="Copy page HTML">📋 Copy HTML</button>
+        <!-- Runtime toggles for client-side behavior -->
+        <button id="toggleMarkdown" class="btn" title="Render markdown">MD</button>
+        <button id="toggleSanitize" class="btn" title="Sanitize inserted HTML">🛡️</button>
+        <button id="toggleFuzzy" class="btn" title="Fuzzy search">🔎</button>
+      </div>
+    </div>
+
+    <section id="page" class="page-card">
+      <div id="pageHeader" class="page-title"><h1>Welcome</h1><span class="badge">RTFM</span><div id="sanitizeNotice" class="small" style="margin-left:auto;color:var(--muted);display:none;">Unsanitized content — click 🛡️ to sanitize</div></div>
+      <div id="content" class="page-content">
+        <p class="empty">Choose a document on the left or use search to find content. This viewer renders HTML natively. Use the search box (or press /) to find matches. Click an item to show it here.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Store the pages as JSON in a script tag to avoid embedding raw HTML into JS strings -->
+<script id="rtfm-data" type="application/json">
+[
+  {
+    "id": "__init__.md",
+    "title": "__init__.md",
+    "tags": [],
+    "html": "<div class=\"rtfm-markdown\"><pre style=\"white-space:pre-wrap;\"># __init__.py\\n\\nrtfmlib - lightweight refactor of pydocgen components\\n\\nThis package provides:\\n- DocGenerator: simple AST-based parser for Python modules/packages\\n- parse_file: convenience for single-file parsing\\n- DocCache: thread-safe cache with mtime fingerprinting, inverted index and search\\n- utils: small helpers\\n\\nThis is a compact, library-oriented rewrite of the repository's docgen and live_web_server code.</pre></div>",
+    "md": "# __init__.py\n\nrtfmlib - lightweight refactor of pydocgen components\n\nThis package provides:\n- DocGenerator: simple AST-based parser for Python modules/packages\n- parse_file: convenience for single-file parsing\n- DocCache: thread-safe cache with mtime fingerprinting, inverted index and search\n- utils: small helpers\n\nThis is a compact, library-oriented rewrite of the repository's docgen and live_web_server code."
+  },
+  {
+    "id": "example.html",
+    "title": "example.html",
+    "tags": [],
+    "html": "<h1>Example HTML</h1>\n<p>This is a native HTML example. It includes an <a href=\"https://example.com\" target=\"_blank\" rel=\"noopener\">external link</a>, a list, and a code block.</p>\n<ul><li>First item</li><li>Second item</li></ul>\n<pre><code>def hello():\n    print('hello')</code></pre>"
+  },
+  {
+    "id": "main.md",
+    "title": "main.md",
+    "tags": [],
+    "html": "<div class=\"rtfm-markdown\"><pre style=\"white-space:pre-wrap;\"># main.py\\n\\nrtfm main CLI\\n\\nEnhanced single-file interactive HTML viewer generation.\\n\\nFeatures:\\n- Client-side config for rendering markdown, sanitization, and fuzzy search\\n- CLI flags: --render-markdown, --sanitize, --fuzzy-search\\n- Pages include both HTML and (when available) markdown source for client-side rendering\\n\\nSecurity: the generated page may insert page.html using innerHTML to support native\\nHTML content. Only serve or open output you trust. Use --sanitize to attempt DOMPurify\\nclient-side sanitization.</pre></div>",
+    "md": "# main.py\n\nrtfm main CLI\n\nEnhanced single-file interactive HTML viewer generation.\n\nFeatures:\n- Client-side config for rendering markdown, sanitization, and fuzzy search\n- CLI flags: --render-markdown, --sanitize, --fuzzy-search\n- Pages include both HTML and (when available) markdown source for client-side rendering\n\nSecurity: the generated page may insert page.html using innerHTML to support native\nHTML content. Only serve or open output you trust. Use --sanitize to attempt DOMPurify\nclient-side sanitization."
+  },
+  {
+    "id": "server.md",
+    "title": "server.md",
+    "tags": [],
+    "html": "<div class=\"rtfm-markdown\"><pre style=\"white-space:pre-wrap;\"># server.py\\n\\nDocCache: thread-safe documentation cache with mtime fingerprinting and inverted index.\\n\\nThis module provides DocCache, a reusable component suitable for embedding into\\nweb servers or other tools that need to keep an up-to-date view of parsed\\nPython documentation for a path.\\n\\nIt intentionally does not depend on Flask or any web framework; it simply\\nmaintains parsed docs, an inverted index, and exposes a snapshot and search\\nAPI that are safe to call from multiple threads.</pre></div>",
+    "md": "# server.py\n\nDocCache: thread-safe documentation cache with mtime fingerprinting and inverted index.\n\nThis module provides DocCache, a reusable component suitable for embedding into\nweb servers or other tools that need to keep an up-to-date view of parsed\nPython documentation for a path.\n\nIt intentionally does not depend on Flask or any web framework; it simply\nmaintains parsed docs, an inverted index, and exposes a snapshot and search\nAPI that are safe to call from multiple threads."
+  }
+]
+</script>
+
+<script>
+// Load pages from JSON script
+const pages = JSON.parse(document.getElementById('rtfm-data').textContent);
+
+// Default config; we'll merge user prefs from localStorage
+const __RTFM_CONFIG = {renderMarkdown: false, sanitize: true, fuzzySearch: false, autoOpenFirst: true};
+
+// Try to hydrate saved config
+try{
+  const saved = JSON.parse(localStorage.getItem('rtfm:config') || '{}');
+  Object.assign(__RTFM_CONFIG, saved);
+}catch(e){ /* ignore */ }
+
+// DOM refs
+const listEl = document.getElementById('list');
+const contentEl = document.getElementById('content');
+const pageHeaderEl = document.getElementById('pageHeader');
+const searchInput = document.getElementById('search');
+const themeToggle = document.getElementById('themeToggle');
+const clearSearch = document.getElementById('clearSearch');
+const prevBtn = document.getElementById('prevBtn'), nextBtn = document.getElementById('nextBtn');
+const copyLink = document.getElementById('copyLink');
+const copyHtml = document.getElementById('copyHtml');
+const toggleMarkdown = document.getElementById('toggleMarkdown');
+const toggleSanitize = document.getElementById('toggleSanitize');
+const toggleFuzzy = document.getElementById('toggleFuzzy');
+
+let currentId = null;
+let query = '';
+let theme = localStorage.getItem('rtfm:theme') || 'light';
+setTheme(theme);
+
+function persistConfig(){
+  try{ localStorage.setItem('rtfm:config', JSON.stringify(__RTFM_CONFIG)); }catch(e){}
+}
+
+function applyConfigUI(){
+  toggleMarkdown.classList.toggle('active', !!__RTFM_CONFIG.renderMarkdown);
+  toggleSanitize.classList.toggle('active', !!__RTFM_CONFIG.sanitize);
+  toggleFuzzy.classList.toggle('active', !!__RTFM_CONFIG.fuzzySearch);
+}
+applyConfigUI();
+
+function setTheme(t){
+  document.body.setAttribute('data-theme', t);
+  theme = t;
+  themeToggle.textContent = t === 'light' ? '🌙' : '☀️';
+  try{ localStorage.setItem('rtfm:theme', t); }catch(e){}
+}
+
+function stripHtml(html){ const d = document.createElement('div'); d.innerHTML = html; return d.innerText || ''; }
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function fuzzyScore(text, pattern){
+  text = text.toLowerCase(); pattern = pattern.toLowerCase();
+  if(text === pattern) return 1000;
+  const idx = text.indexOf(pattern);
+  if(idx !== -1) return 500 - idx;
+  let i = 0, j = 0, matches = 0;
+  while(i < text.length && j < pattern.length){ if(text[i] === pattern[j]){ matches++; j++; } i++; }
+  return matches > 0 ? matches : 0;
+}
+
+function rankMatches(pagesArr, q){
+  if(!q) return pagesArr.map(p => ({p, score:0}));
+  const scored = pagesArr.map(p => { const hay = (p.title + ' ' + stripHtml(p.html)).toLowerCase(); return {p, score: fuzzyScore(hay, q)}; });
+  scored.sort((a,b) => b.score - a.score);
+  return scored.filter(x => x.score > 0);
+}
+
+function renderList(filter){
+  listEl.innerHTML = '';
+  const q = (filter || '').trim();
+  let matches;
+  if(__RTFM_CONFIG.fuzzySearch && q){ matches = rankMatches(pages, q).map(x => x.p); }
+  else { const low = q.toLowerCase(); matches = pages.filter(p => { if(!low) return true; return (p.title + ' ' + stripHtml(p.html)).toLowerCase().includes(low); }); }
+  if(matches.length === 0){ listEl.innerHTML = '<div class="empty">No documents found</div>'; return; }
+  matches.forEach(p => {
+    const item = document.createElement('a');
+    item.href = '#' + p.id;
+    // Accessibility: make each list item focusable and keyboard-activatable
+    item.className = 'item' + (p.id === currentId ? ' active' : '');
+    item.setAttribute('role','listitem');
+    item.tabIndex = 0;
+    item.addEventListener('keydown', (evt) => { if(evt.key === 'Enter' || evt.key === ' ') { evt.preventDefault(); navigateTo(p.id); } }); item.href = '#' + p.id; item.className = 'item' + (p.id === currentId ? ' active' : ''); item.setAttribute('role','listitem');
+    const t = document.createElement('div'); t.className = 'title'; t.textContent = p.title;
+    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = (p.tags||[]).join(' · ');
+    const preview = document.createElement('div'); preview.className = 'preview'; preview.textContent = stripHtml(p.html).slice(0,140);
+    item.appendChild(t); if(meta.textContent) item.appendChild(meta); item.appendChild(preview);
+    item.addEventListener('click', (evt) => { evt.preventDefault(); navigateTo(p.id); });
+    listEl.appendChild(item);
+    if(q){ highlightTextNode(t, q); highlightTextNode(preview, q); }
+  });
+}
+
+function renderPage(id){
+  const p = pages.find(x => x.id === id);
+  currentId = id;
+  Array.from(listEl.querySelectorAll('.item')).forEach(a => { a.classList.toggle('active', a.getAttribute('href') === ('#'+id)); });
+  if(!p){ pageHeaderEl.innerHTML = '<h1>Not found</h1>'; contentEl.innerHTML = '<div class="empty">Document not found.</div>'; try{ const sn = document.getElementById('sanitizeNotice'); if(sn) sn.style.display = 'none'; }catch(e){} return; }
+  pageHeaderEl.innerHTML = `<h1>${escapeHtml(p.title)}</h1><span class="badge">${(p.tags||[]).join(', ') || 'Document'}</span>`;
+
+  if(__RTFM_CONFIG.renderMarkdown && p.md){
+    if(window.marked){ try{ let out = window.marked(p.md); if(__RTFM_CONFIG.sanitize && window.DOMPurify){ out = window.DOMPurify.sanitize(out); } contentEl.innerHTML = out; }catch(e){ contentEl.innerHTML = '<pre style="white-space:pre-wrap;">' + escapeHtml(p.md) + '</pre>'; } }
+    else { contentEl.innerHTML = '<pre style="white-space:pre-wrap;">' + escapeHtml(p.md) + '</pre>'; const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.crossOrigin='anonymous'; s.onload = () => { try{ const out = window.marked(p.md); if(__RTFM_CONFIG.sanitize && window.DOMPurify){ contentEl.innerHTML = window.DOMPurify.sanitize(out); } else { contentEl.innerHTML = out; } }catch(e){} }; document.head.appendChild(s); }
+  } else {
+    let insertHtml = p.html;
+    if(__RTFM_CONFIG.sanitize){ if(window.DOMPurify){ insertHtml = window.DOMPurify.sanitize(insertHtml); contentEl.innerHTML = insertHtml; } else { contentEl.innerHTML = insertHtml; const sd = document.createElement('script'); sd.src = 'https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js'; sd.crossOrigin='anonymous'; sd.onload = () => { try{ contentEl.innerHTML = window.DOMPurify.sanitize(p.html); }catch(e){} }; document.head.appendChild(sd); } }
+    else { contentEl.innerHTML = insertHtml; }
+  }
+
+  if(query) highlightMatches(contentEl, query);
+  // sanitize notice: visible when sanitize is OFF (content may be unsafe)
+  try{
+    const sn = document.getElementById('sanitizeNotice'); if(sn) sn.style.display = (__RTFM_CONFIG.sanitize ? 'none' : 'block');
+  }catch(e){}
+
+  // Make content focusable for keyboard users
+  try{ contentEl.tabIndex = -1; contentEl.focus(); }catch(e){}
+
+  if(location.hash !== '#'+id) history.pushState(null,'','#'+id);
+}
+
+function navigateTo(id){ renderPage(id); }
+function onHashChange(){ const id = location.hash ? location.hash.slice(1) : null; if(id){ renderPage(id); } else { currentId = null; pageHeaderEl.innerHTML = '<h1>Welcome</h1><span class="badge">RTFM</span>'; contentEl.innerHTML = '<p class="empty">Choose a document on the left or use search to find content.</p>'; renderList(query); } }
+
+function highlightMatches(container, q){ if(!q) return; const regex = new RegExp(escapeRegExp(q),'ig'); const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null); const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(node => { if(!node.nodeValue.trim()) return; const parent = node.parentNode; if(parent && parent.closest && parent.closest('mark')) return; const text = node.nodeValue; if(regex.test(text)){ const frag = document.createDocumentFragment(); let lastIndex = 0; text.replace(regex, (m, idx) => { if(idx > lastIndex) frag.appendChild(document.createTextNode(text.slice(lastIndex, idx))); const mark = document.createElement('mark'); mark.textContent = m; frag.appendChild(mark); lastIndex = idx + m.length; return m; }); if(lastIndex < text.length) frag.appendChild(document.createTextNode(text.slice(lastIndex))); parent.replaceChild(frag, node); } }); }
+function clearHighlights(container){ const marks = Array.from(container.querySelectorAll('mark')); marks.forEach(m => { m.replaceWith(document.createTextNode(m.textContent)); }); }
+function highlightTextNode(el, q){ if(!q) return; const regex = new RegExp(escapeRegExp(q),'ig'); el.innerHTML = el.textContent.replace(regex, m => `<mark>${m}</mark>`); }
+
+// Wire up inputs and toolbar
+searchInput.addEventListener('input', (e) => { query = e.target.value.trim(); renderList(query); if(currentId) renderPage(currentId); else clearHighlights(contentEl); });
+clearSearch.addEventListener('click', () => { searchInput.value = ''; searchInput.focus(); query = ''; renderList(''); if(currentId) renderPage(currentId); });
+document.addEventListener('keydown', (e) => {
+  // Quick focus for search
+  if(e.key === '/' && document.activeElement !== searchInput){ e.preventDefault(); searchInput.focus(); searchInput.select(); }
+  if(e.key === 'Escape'){ searchInput.blur(); }
+  // Navigation: Ctrl/Cmd+N / Ctrl/Cmd+P or ArrowRight / ArrowLeft
+  if((e.key === 'n' && (e.ctrlKey || e.metaKey)) || e.key === 'ArrowRight'){ e.preventDefault(); goNext(); }
+  if((e.key === 'p' && (e.ctrlKey || e.metaKey)) || e.key === 'ArrowLeft'){ e.preventDefault(); goPrev(); }
+});
+
+themeToggle.addEventListener('click', () => setTheme(theme === 'light' ? 'dark' : 'light'));
+
+function getCurrentIndex(){ if(!currentId) return -1; return pages.findIndex(p => p.id === currentId); }
+function goNext(){ const idx = getCurrentIndex(); if(idx === -1) return; const next = pages[(idx + 1) % pages.length]; navigateTo(next.id); }
+function goPrev(){ const idx = getCurrentIndex(); if(idx === -1) return; const prev = pages[(idx - 1 + pages.length) % pages.length]; navigateTo(prev.id); }
+nextBtn.addEventListener('click', goNext); prevBtn.addEventListener('click', goPrev);
+
+copyLink.addEventListener('click', () => { const url = location.href; navigator.clipboard?.writeText(url).then(() => { copyLink.textContent = '✓ Copied'; setTimeout(()=> copyLink.textContent = '🔗 Copy Link', 1200); }).catch(()=> { alert('Copy failed — your browser may not allow clipboard access.'); }); });
+copyHtml.addEventListener('click', () => { try{ const html = contentEl.innerHTML; navigator.clipboard?.writeText(html).then(()=>{ copyHtml.textContent = '✓ Copied'; setTimeout(()=>copyHtml.textContent='📋 Copy HTML',1200); }).catch(()=>{ alert('Copy failed — your browser may not allow clipboard access.'); }); }catch(e){ alert('Copy failed: '+e.message); } });
+
+// Toggle handlers — update config, persist, and re-render
+function updateConfig(key, value){
+  __RTFM_CONFIG[key] = value;
+  persistConfig();
+  applyConfigUI();
+  // If sanitization was enabled, load DOMPurify for future sanitization
+  if(key === 'sanitize' && __RTFM_CONFIG.sanitize && !window.DOMPurify){
+    const sd = document.createElement('script'); sd.src = 'https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js'; sd.crossOrigin = 'anonymous'; document.head.appendChild(sd);
+  }
+  // If markdown rendering was enabled, load marked library
+  if(key === 'renderMarkdown' && __RTFM_CONFIG.renderMarkdown && !window.marked){
+    const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js'; s.crossOrigin = 'anonymous'; document.head.appendChild(s);
+  }
+  if(currentId) renderPage(currentId); else renderList(query);
+}
+
+toggleMarkdown.addEventListener('click', () => updateConfig('renderMarkdown', !__RTFM_CONFIG.renderMarkdown));
+toggleSanitize.addEventListener('click', () => updateConfig('sanitize', !__RTFM_CONFIG.sanitize));
+toggleFuzzy.addEventListener('click', () => updateConfig('fuzzySearch', !__RTFM_CONFIG.fuzzySearch));
+
+// initialize UI state
+applyConfigUI();
+
+// initial render
+renderList('');
+if(!location.hash && __RTFM_CONFIG.autoOpenFirst && pages.length>0){
+  navigateTo(pages[0].id);
+} else {
+  onHashChange();
+}
+window.addEventListener('hashchange', onHashChange);
+
+// external API
+window.docsApp = { addPage(page){ pages.push(page); renderList(query); }, open(id){ navigateTo(id); } };
+
+// If sanitize config is set, attempt to load DOMPurify proactively for better UX
+if(__RTFM_CONFIG.sanitize && !window.DOMPurify){ const sd = document.createElement('script'); sd.src = 'https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js'; sd.crossOrigin = 'anonymous'; document.head.appendChild(sd); }
+
+</script>
+</body>
+</html>
