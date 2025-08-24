@@ -1,399 +1,324 @@
-import ast
+"""
+Streamlit web app that generates browsable documentation from what
+pydoccrawler finds in Python codebases (docstrings + inline comments),
+including function signatures (args/types/defaults/returns), with export
+to Markdown or JSON.
+
+Run:
+  pip install streamlit pydoccrawler
+  streamlit run docsite_app.py
+
+If you're developing both side-by-side, `pip install -e .` from the
+pydoccrawler repo first.
+"""
+
+from __future__ import annotations
+import json
 import os
-import sys
-import tokenize
-from io import StringIO
-import importlib.util
-from collections import deque
-from typing import Dict, Any, List, Optional, Tuple, Set
+from typing import Any, Dict, List, Tuple
 
+import streamlit as st
 
-# ---------------------------- Utilities ----------------------------
-
-SKIP_DIR_NAMES = {".git", "__pycache__", ".mypy_cache", ".pytest_cache", ".venv", "venv", "env", ".env", "build", "dist"}
-PY_EXTS = {".py"}  # you can add .pyi if you want stubs too
-
-
-def is_python_file(path: str) -> bool:
-    return os.path.splitext(path)[1].lower() in PY_EXTS
-
-
-def ensure_on_sys_path(path: str):
-    """Add a directory to sys.path if not present."""
-    if path not in sys.path:
-        sys.path.insert(0, path)
-
-
-def find_package_root(dir_path: str) -> Tuple[str, Optional[str]]:
-    """
-    If dir_path is within a Python package (has __init__.py up the chain),
-    return (root_dir_added_to_sys_path, dotted_package_name_of_dir).
-    If not a package, returns (root_dir, None).
-    """
-    cur = os.path.abspath(dir_path)
-    parts = []
-    last_pkg_parent = None
-
-    while True:
-        if os.path.isfile(os.path.join(cur, "__init__.py")):
-            parts.append(os.path.basename(cur))
-            last_pkg_parent = os.path.dirname(cur)
-            cur = os.path.dirname(cur)
-        else:
-            # we've reached the parent that should be on sys.path
-            root_dir = cur
-            pkg_name = ".".join(reversed(parts)) if parts else None
-            return root_dir, pkg_name
-
-
-def dotted_package_for_file(file_path: str) -> Optional[str]:
-    """
-    Try to infer dotted package for a file by walking up __init__.py.
-    Returns something like 'pkg.subpkg.module' or None if not package.
-    """
-    file_path = os.path.abspath(file_path)
-    if not os.path.isfile(file_path):
-        return None
-
-    mod_name = os.path.splitext(os.path.basename(file_path))[0]
-    cur_dir = os.path.dirname(file_path)
-
-    segments = [mod_name]
-    saw_pkg = False
-    while True:
-        if os.path.isfile(os.path.join(cur_dir, "__init__.py")):
-            segments.append(os.path.basename(cur_dir))
-            saw_pkg = True
-            cur_dir = os.path.dirname(cur_dir)
-        else:
-            break
-
-    if not saw_pkg:
-        return None
-
-    return ".".join(reversed(segments))
-
-
-def resolve_relative_import(base_pkg: Optional[str], level: int, module: Optional[str]) -> Optional[str]:
-    """
-    Resolve a from-import with relative 'level' based on base_pkg.
-    Example: base_pkg='pkg.sub', level=1, module='utils' -> 'pkg.utils'
-    """
-    if base_pkg is None:
-        return None
-    base_parts = base_pkg.split(".")
-    if level > len(base_parts):
-        return None
-    target_base = ".".join(base_parts[:-level]) if level else base_pkg
-    if module:
-        return f"{target_base}.{module}" if target_base else module
-    return target_base or None
-
-
-# ---------------------- Parsing a single file ----------------------
-
-def parse_file_docs(filepath: str) -> Tuple[Dict[str, Any], List[Tuple[str, int]]]:
-    """
-    Return (docs_dict, imports_list).
-    imports_list = list of (imported_name, lineno) with absolute module names when possible
-    (relative handled later in crawl where we know the package context).
-    """
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            source = f.read()
-    except Exception as e:
-        return {"__error__": f"Cannot read {filepath}: {e}"}, []
-
-    try:
-        tree = ast.parse(source)
-    except SyntaxError as e:
-        return {"__error__": f"SyntaxError in {filepath}: {e}"}, []
-
-    docs: Dict[str, Any] = {"__module__": ast.get_docstring(tree), "__comments__": []}
-
-    # Track class/function spans to attach comments
-    spans: List[Tuple[int, int, str, ast.AST]] = []
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            spans.append((node.lineno, node.end_lineno, f"function:{node.name}", node))
-        elif isinstance(node, ast.ClassDef):
-            spans.append((node.lineno, node.end_lineno, f"class:{node.name}", node))
-
-    # Collect declared imports (absolute strings; relative handled at crawl-time)
-    imports: List[Tuple[str, int]] = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            for alias in node.names:
-                imports.append((alias.name, node.lineno))
-        elif isinstance(node, ast.ImportFrom):
-            # keep module, level; expansion is done later when base package is known
-            mod = node.module  # can be None
-            lvl = getattr(node, "level", 0) or 0
-            if node.names:
-                for alias in node.names:
-                    # store as special token for later resolution
-                    name = f"__REL__:{lvl}:{mod or ''}:{alias.name}" if lvl else (f"{mod}.{alias.name}" if mod else alias.name)
-                    imports.append((name, node.lineno))
-            else:
-                # "from X import *"
-                name = f"__REL__:{lvl}:{mod or ''}:* " if lvl else (f"{mod}.*" if mod else "*")
-                imports.append((name, node.lineno))
-
-    # Attach inline comments
-    for tok_type, tok_string, start, _, _ in tokenize.generate_tokens(StringIO(source).readline):
-        if tok_type == tokenize.COMMENT:
-            line_no = start[0]
-            text = tok_string.lstrip("# ").rstrip()
-            attached = False
-            for s, e, key, node in spans:
-                if s <= line_no <= e:
-                    if key not in docs:
-                        if isinstance(node, ast.ClassDef):
-                            docs[key] = {"__doc__": ast.get_docstring(node), "__comments__": []}
-                            for item in node.body:
-                                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                                    docs[key][item.name] = {"__doc__": ast.get_docstring(item), "__comments__": []}
-                        else:
-                            docs[key] = {"__doc__": ast.get_docstring(node), "__comments__": []}
-                    docs[key]["__comments__"].append(text)
-                    attached = True
-                    break
-            if not attached:
-                docs["__comments__"].append(text)
-
-    # Also add docstrings for top-level defs/classes that might have no comments
-    for s, e, key, node in spans:
-        if key not in docs:
-            if isinstance(node, ast.ClassDef):
-                cls = {"__doc__": ast.get_docstring(node), "__comments__": []}
-                for item in node.body:
-                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        cls[item.name] = {"__doc__": ast.get_docstring(item), "__comments__": []}
-                docs[key] = cls
-            else:
-                docs[key] = {"__doc__": ast.get_docstring(node), "__comments__": []}
-
-    return docs, imports
-
-
-# ----------------------------- Crawler -----------------------------
-
-class DocCrawler:
-    def __init__(
-        self,
-        max_modules: int = 5000,
-        max_file_size_bytes: int = 2_000_000,
-        follow_dependency_tree: bool = True,
-        skip_dirs: Optional[Set[str]] = None,
-    ):
-        self.max_modules = max_modules
-        self.max_file_size_bytes = max_file_size_bytes
-        self.follow_dependency_tree = follow_dependency_tree
-        self.skip_dirs = set(skip_dirs or set()).union(SKIP_DIR_NAMES)
-
-        self.visited_files: Set[str] = set()
-        self.visited_modules: Set[str] = set()
-
-    def _should_skip_dir(self, d: str) -> bool:
-        return os.path.basename(d) in self.skip_dirs
-
-    def _resolve_module(self, module_name: str) -> Optional[importlib.machinery.ModuleSpec]:
-        try:
-            return importlib.util.find_spec(module_name)
-        except Exception:
-            return None
-
-    def _enqueue_package_root(self, package_spec: importlib.machinery.ModuleSpec, queue: deque):
-        """
-        Enqueue all .py files inside a package directory (just the entry points).
-        Internal imports will fan out on their own during parsing.
-        """
-        if not package_spec or not package_spec.origin:
-            return
-        if not package_spec.origin.endswith("__init__.py"):
-            return
-        pkg_dir = os.path.dirname(package_spec.origin)
-        for root, dirs, files in os.walk(pkg_dir):
-            # prune
-            dirs[:] = [d for d in dirs if not self._should_skip_dir(os.path.join(root, d))]
-            for f in files:
-                if is_python_file(f):
-                    queue.append(("file", os.path.join(root, f), None))
-
-    def _file_package_context(self, file_path: str) -> Optional[str]:
-        return dotted_package_for_file(file_path)
-
-    def crawl_directory(self, directory: str) -> Dict[str, Any]:
-        """
-        Crawl a project directory, then recursively crawl its entire import dependency tree.
-        Returns a dict keyed by file path (and special keys for imports).
-        """
-        directory = os.path.abspath(directory)
-        ensure_on_sys_path(directory)
-
-        results: Dict[str, Any] = {}
-        queue: deque = deque()
-
-        # Seed queue with local project files
-        for root, dirs, files in os.walk(directory):
-            dirs[:] = [d for d in dirs if not self._should_skip_dir(os.path.join(root, d))]
-            for f in files:
-                if is_python_file(f):
-                    queue.append(("file", os.path.join(root, f), None))
-
-        modules_count = 0
-
-        while queue:
-            kind, target, ctx = queue.popleft()
-
-            if modules_count >= self.max_modules:
-                results["__warning__"] = f"Max modules limit reached ({self.max_modules})."
-                break
-
-            if kind == "file":
-                file_path = os.path.abspath(target)
-                if file_path in self.visited_files:
-                    continue
-
-                try:
-                    size = os.path.getsize(file_path)
-                    if size > self.max_file_size_bytes:
-                        results[file_path] = {"__error__": f"File too large ({size} bytes)"}
-                        self.visited_files.add(file_path)
-                        continue
-                except Exception:
-                    pass
-
-                # Parse file
-                docs, imports = parse_file_docs(file_path)
-                results[file_path] = docs
-                self.visited_files.add(file_path)
-                modules_count += 1
-
-                # Establish base package context for resolving relatives
-                base_pkg = self._file_package_context(file_path)
-
-                # Expand/import fan-out
-                if self.follow_dependency_tree:
-                    for imp_name, _lineno in imports:
-                        resolved_abs = self._normalize_import_name(imp_name, base_pkg)
-                        if not resolved_abs:
-                            continue
-                        self._queue_module_resolution(resolved_abs, results, queue)
-
-            elif kind == "module":
-                modname = target
-                if modname in self.visited_modules:
-                    continue
-                self.visited_modules.add(modname)
-
-                spec = self._resolve_module(modname)
-                if not spec:
-                    results[f"__import__:{modname}"] = "(unresolved)"
-                    continue
-
-                # Built-ins / extensions
-                if spec.origin in (None, "built-in"):
-                    results[f"__import__:{modname}"] = "(built-in)"
-                    continue
-                if spec.origin.endswith((".so", ".pyd", ".dll")):
-                    results[f"__import__:{modname}"] = f"(binary or missing source: {spec.origin})"
-                    continue
-
-                if spec.origin.endswith("__init__.py"):
-                    # package
-                    results[f"__import__:{modname}"] = {"__package__": spec.origin}
-                    self._enqueue_package_root(spec, queue)
-                elif spec.origin.endswith(".py"):
-                    # single file module
-                    queue.append(("file", spec.origin, None))
-                else:
-                    results[f"__import__:{modname}"] = f"(unknown origin: {spec.origin})"
-
-        return results
-
-    def _normalize_import_name(self, raw: str, base_pkg: Optional[str]) -> Optional[str]:
-        """
-        Convert stored import tokens into absolute module names where possible.
-        """
-        if raw.startswith("__REL__:"):
-            # __REL__:{level}:{module}:{name}
-            _, level, module, name = raw.split(":", 3)
-            level = int(level)
-            module = module or None
-            abs_name = resolve_relative_import(base_pkg, level, module)
-            if abs_name:
-                return f"{abs_name}.{name}" if name and name != "*" else abs_name
-            return None
-        else:
-            # already absolute-ish (could still be subattr like 'pkg.mod.func')
-            return raw.split(":")[0]  # strip any stray tokens
-
-    def _queue_module_resolution(self, module_name: str, results: Dict[str, Any], queue: deque):
-        """
-        Given something like 'numpy.core' or 'os.path', schedule it for resolution.
-        Try progressively shorter prefixes because importlib spec works at module/package boundaries.
-        """
-        # Try the longest → shortest prefix until a spec is found.
-        parts = module_name.split(".")
-        for i in range(len(parts), 0, -1):
-            candidate = ".".join(parts[:i])
-            spec = self._resolve_module(candidate)
-            if spec:
-                # enqueue module (which may enqueue its package files or itself as .py)
-                queue.append(("module", candidate, None))
-                return
-        # If nothing resolved, record as unresolved
-        results.setdefault("__unresolved__", set()).add(module_name)
-
-
-# ----------------------------- Example -----------------------------
-
-if __name__ == "__main__":
-    """
-    Example usage:
-      python doc_crawler.py /path/to/your/project
-
-    Tips:
-      - Consider starting with smaller max_modules for huge trees.
-      - If your project is a package, run from its parent so the package root is on sys.path.
-    """
-    import json
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Deep documentation crawler (project + dependency tree).")
-    parser.add_argument("path", help="Project directory (or a single .py file).")
-    parser.add_argument("--max-modules", type=int, default=5000)
-    parser.add_argument("--max-file-size", type=int, default=2_000_000, help="Bytes; skip giant files.")
-    parser.add_argument("--no-follow", action="store_true", help="Do not follow imports (project only).")
-    args = parser.parse_args()
-
-    target = os.path.abspath(args.path)
-
-    crawler = DocCrawler(
-        max_modules=args.max_modules,
-        max_file_size_bytes=args.max_file_size,
-        follow_dependency_tree=not args.no_follow,
+try:
+    # Your refactored library should provide the same interface
+    # and embed function signatures in the parsed structure.
+    from rtfmlib.crawler import DocCrawler
+except Exception as e:
+    st.warning(
+        "Couldn't import `pydoccrawler`. Install it with `pip install -e .` from your repo or `pip install pydoccrawler` if published.\n\n"
+        f"Import error: {e}"
     )
+    DocCrawler = None  # type: ignore
 
-    if os.path.isdir(target):
-        root_dir, _ = find_package_root(target)
-        ensure_on_sys_path(root_dir)
-        results = crawler.crawl_directory(target)
-    elif os.path.isfile(target) and is_python_file(target):
-        root_dir, _ = find_package_root(os.path.dirname(target))
-        ensure_on_sys_path(root_dir)
-        # Crawl starting from the single file by treating its folder as project
-        results = crawler.crawl_directory(os.path.dirname(target))
-    else:
-        print("Provide a directory or a .py file.")
-        sys.exit(1)
+# --------------------------- Helpers ---------------------------
 
-    # Convert any sets to lists for JSON-ability
-    def _coerce(obj):
+def flatten_docs(doc_tree: Dict[str, Any]) -> List[Tuple[str, Dict[str, Any]]]:
+    """Return list of (key, docs) where key is a file path or import marker.
+    Note: we filter to dict-like values to avoid raw strings for builtins.
+    """
+    items: List[Tuple[str, Dict[str, Any]]] = []
+    for k, v in doc_tree.items():
+        if isinstance(v, dict):
+            items.append((k, v))
+    # Flip the array of files around before rendering (reverse order)
+    items.sort(key=lambda kv: kv[0])
+    items = list(reversed(items))
+    return items
+
+def _coerce(obj):
         if isinstance(obj, set):
             return list(obj)
         return obj
 
-    with open("output", "w") as f:
-        json.dump(results, f, default=_coerce, indent=2)
+def search_hits(docs: Dict[str, Any], q: str) -> bool:
+    q = q.lower().strip()
+    if not q:
+        return True
+    try:
+        blob = json.dumps(docs, default=_coerce, ensure_ascii=False).lower()
+        return q in blob
+    except Exception:
+        return False
+
+
+def fmt_signature(sig: Dict[str, Any] | None) -> str:
+    if not sig:
+        return "()"
+    args = sig.get("args", []) or []
+    returns = sig.get("returns")
+    parts: List[str] = []
+    for a in args:
+        name = a.get("name") or "_"
+        t = a.get("type")
+        d = a.get("default")
+        s = name
+        if t:
+            s += f": {t}"
+        if d is not None:
+            s += f" = {d}"
+        parts.append(s)
+    sig_str = f"({', '.join(parts)})"
+    if returns:
+        sig_str += f" -> {returns}"
+    return sig_str
+
+
+def docnode_to_markdown(name: str, node: Any, level: int = 2) -> str:
+    """Render a single class/function or module section to Markdown."""
+    md: List[str] = []
+    h = "#" * max(1, min(6, level))
+
+    if isinstance(node, dict) and ("__doc__" in node or "__comments__" in node):
+        # If it's a function/method node with a signature, include it in the heading
+        sig = node.get("signature") if isinstance(node, dict) else None
+        title = name
+        if sig and (name.startswith("def ") or name.startswith("method: ") or name.startswith("function:")):
+            title += f" {fmt_signature(sig)}"
+        md.append(f"{h} {title}")
+
+        doc = node.get("__doc__")
+        if doc:
+            md.append("\n" + str(doc).strip() + "\n")
+
+        comments = node.get("__comments__", [])
+        if comments:
+            md.append("**Inline comments**:")
+            for c in comments:
+                md.append(f"- {c}")
+
+        # nested methods if it's a class
+        for k, v in node.items():
+            if k in {"__doc__", "__comments__", "signature"}:
+                continue
+            if isinstance(v, dict) and ("__doc__" in v or "__comments__" in v):
+                subtitle = k
+                if v.get("signature") and (k.startswith("method:") or k.startswith("function:")):
+                    subtitle += f" {fmt_signature(v.get('signature'))}"
+                md.append(docnode_to_markdown(subtitle, v, level + 1))
+
+    return "\n".join(md)
+
+
+def file_docs_to_markdown(filepath_key: str, docs: Dict[str, Any]) -> str:
+    md: List[str] = []
+    md.append(f"# {os.path.basename(filepath_key)}")
+
+    if "__module__" in docs and docs["__module__"]:
+        md.append("\n" + str(docs["__module__"]).strip() + "\n")
+
+    comments = docs.get("__comments__", [])
+    if comments:
+        md.append("## Module Inline Comments")
+        for c in comments:
+            md.append(f"- {c}")
+
+    # classes / functions
+    for k, v in docs.items():
+        if k.startswith("class:"):
+            md.append(docnode_to_markdown(k.replace("class:", "class "), v, 2))
+    for k, v in docs.items():
+        if k.startswith("function:"):
+            title = k.replace("function:", "def ")
+            md.append(docnode_to_markdown(title, v, 2))
+
+    # imports summary if present in this node (often stored only at crawl-level markers)
+    imports = docs.get("__imports__")
+    if imports:
+        md.append("## Imports\n")
+        for imp in imports:
+            md.append(f"- `{imp}`")
+
+    return "\n\n".join([s for s in md if s])
+
+
+def entire_site_markdown(doc_tree: Dict[str, Any]) -> str:
+    parts: List[str] = ["# Project Documentation\n"]
+    for key, docs in flatten_docs(doc_tree):
+        if key.startswith("__import__:"):
+            # render a short stub for imports
+            parts.append(f"\n## {key}\n")
+            if isinstance(docs, dict):
+                origin = docs.get("__package__", "(package or module)")
+                parts.append(f"Origin: `{origin}`\n")
+            else:
+                parts.append(f"{docs}\n")
+            continue
+        parts.append(file_docs_to_markdown(key, docs))
+    return "\n\n".join(parts)
+
+
+# --------------------------- UI ---------------------------
+
+st.set_page_config(page_title="Python Doc Site Generator", layout="wide")
+st.title("🐍 Python Doc Site Generator")
+
+with st.sidebar:
+    st.header("Crawl Settings")
+    project_path = st.text_input("Project path", value=os.getcwd())
+    max_modules = st.number_input("Max modules", min_value=1, max_value=50000, value=5, step=10)
+    max_file_size = st.number_input("Max file size (bytes)", min_value=10000, max_value=50_000_000, value=2_000_000, step=10000)
+    follow = st.checkbox("Follow dependency tree (external libraries)", value=True)
+    run = st.button("🚀 Crawl Project", type="primary", use_container_width=True)
+
+if "doc_tree" not in st.session_state:
+    st.session_state.doc_tree = None
+
+if run:
+    if not DocCrawler:
+        st.stop()
+    crawler = DocCrawler(max_modules=int(max_modules), max_file_size_bytes=int(max_file_size), follow_dependency_tree=bool(follow))
+
+    with st.status("Crawling… This may take a while for big dependency trees.", expanded=True) as status:
+        st.write(f"Scanning: `{project_path}`")
+        results = crawler.crawl_directory(project_path)
+        st.session_state.doc_tree = results
+        status.update(label="Done", state="complete")
+
+# --------------- Results / Exploration ---------------
+
+doc_tree: Dict[str, Any] | None = st.session_state.doc_tree
+
+if not doc_tree:
+    st.info("Run a crawl to generate documentation.")
+    st.stop()
+
+st.subheader("Overview")
+items = flatten_docs(doc_tree)
+left, right = st.columns([1, 3], gap="large")
+
+with left:
+    st.caption("Files & Import Markers (reversed order)")
+    query = st.text_input("Search (full-text)")
+    filtered = [(k, v) for (k, v) in items if search_hits(v, query)]
+    st.write(f"Showing **{len(filtered)}** of **{len(items)}** entries")
+
+    # Simple navigator list (reversed was already applied in flatten_docs)
+    for key, _ in filtered:
+        if st.button(key, use_container_width=True):
+            st.session_state["active_key"] = key
+
+active_key = st.session_state.get("active_key", (filtered[0][0] if filtered else (items[0][0] if items else None)))
+
+with right:
+    if not active_key:
+        st.warning("No entries to display.")
+    else:
+        docs = doc_tree.get(active_key, {})
+        st.markdown(f"### {active_key}")
+
+        if isinstance(docs, dict):
+            # Module docstring
+            if docs.get("__module__"):
+                with st.expander("Module docstring", expanded=True):
+                    st.markdown(docs["__module__"])  # docstring may contain Markdown-like text
+
+            # Module inline comments
+            if docs.get("__comments__"):
+                with st.expander("Module inline comments"):
+                    for c in docs["__comments__"]:
+                        st.markdown(f"- {c}")
+
+            # Classes
+            class_keys = [k for k in docs.keys() if k.startswith("class:")]
+            if class_keys:
+                st.markdown("#### Classes")
+            for ck in class_keys:
+                cnode = docs[ck]
+                with st.expander(ck):
+                    if isinstance(cnode, dict):
+                        if cnode.get("__doc__"):
+                            st.markdown(cnode["__doc__"])
+                        if cnode.get("__comments__"):
+                            st.markdown("**Comments:**")
+                            for c in cnode["__comments__"]:
+                                st.markdown(f"- {c}")
+                        # Methods
+                        method_keys = [mk for mk in cnode.keys() if mk not in {"__doc__", "__comments__", "signature"}]
+                        for mk in method_keys:
+                            mnode = cnode.get(mk)
+                            with st.expander(f"method: {mk}"):
+                                if isinstance(mnode, dict):
+                                    # Signature line
+                                    sig = mnode.get("signature")
+                                    if sig:
+                                        st.code(f"{mk}{fmt_signature(sig)}")
+                                    if mnode.get("__doc__"):
+                                        st.markdown(mnode["__doc__"])
+                                    if mnode.get("__comments__"):
+                                        st.markdown("**Comments:**")
+                                        for c in mnode["__comments__"]:
+                                            st.markdown(f"- {c}")
+
+            # Functions
+            func_keys = [k for k in docs.keys() if k.startswith("function:")]
+            if func_keys:
+                st.markdown("#### Functions")
+            for fk in func_keys:
+                fnode = docs[fk]
+                with st.expander(fk):
+                    if isinstance(fnode, dict):
+                        # Signature line
+                        sig = fnode.get("signature")
+                        if sig:
+                            name = fk.replace("function:", "")
+                            st.code(f"{name}{fmt_signature(sig)}")
+                        if fnode.get("__doc__"):
+                            st.markdown(fnode["__doc__"])
+                        if fnode.get("__comments__"):
+                            st.markdown("**Comments:**")
+                            for c in fnode["__comments__"]:
+                                st.markdown(f"- {c}")
+
+            # Imports (if stored on this node)
+            if docs.get("__imports__"):
+                with st.expander("Imports in this module"):
+                    for imp in docs["__imports__"]:
+                        st.code(imp)
+        else:
+            st.code(str(docs))
+
+# --------------- Exports ---------------
+
+st.subheader("Export")
+col1, col2 = st.columns(2)
+
+with col1:
+    md = entire_site_markdown(doc_tree)
+    md_bytes = md.encode("utf-8")
+    st.download_button(
+        label="⬇️ Download Markdown",
+        data=md_bytes,
+        file_name="documentation.md",
+        mime="text/markdown",
+    )
+
+with col2:
+    json_bytes = json.dumps(doc_tree, ensure_ascii=False, default=_coerce, indent=2).encode("utf-8")
+    st.download_button(
+        label="⬇️ Download JSON",
+        data=json_bytes,
+        file_name="documentation.json",
+        mime="application/json",
+    )
+
+st.caption("Tip: Use the search box to quickly locate symbols or comments across all files.")
