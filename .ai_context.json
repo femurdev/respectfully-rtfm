@@ -1,1 +1,3 @@
-{}
+{
+    "task": "Create README and docs for r2tfm describing installation via python3 -m pip install -e ., locating python path, exporting PYTHONPATH in zsh, and running r2tfm CLI; include Streamlit usage and troubleshooting."
+}

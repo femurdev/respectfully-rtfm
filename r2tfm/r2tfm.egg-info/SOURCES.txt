@@ -1,0 +1,11 @@
+pyproject.toml
+r2tfm.egg-info/PKG-INFO
+r2tfm.egg-info/SOURCES.txt
+r2tfm.egg-info/dependency_links.txt
+r2tfm.egg-info/entry_points.txt
+r2tfm.egg-info/requires.txt
+r2tfm.egg-info/top_level.txt
+rtfmlib/cli.py
+rtfmlib/crawler.py
+rtfmlib/parser.py
+rtfmlib/utils.py

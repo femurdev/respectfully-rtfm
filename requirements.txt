@@ -1,0 +1,8 @@
+# Requirements for this project
+# Requires Python 3.10+ (uses modern type syntax and ast.unparse)
+
+streamlit>=1.18.0
+
+# Optional: the original pydoccrawler package is mentioned in the README
+# and may provide additional CLI/app integrations. Install if desired:
+# pydoccrawler

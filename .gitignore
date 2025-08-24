@@ -1,3 +1,5 @@
 oldAttempt
 .ropeproject
 .github
+build/
+dist/

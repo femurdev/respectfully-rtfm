@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+r2tfm/__init.py
+r2tfm/__main__.py
+r2tfm/main.py
+r2tfm.egg-info/PKG-INFO
+r2tfm.egg-info/SOURCES.txt
+r2tfm.egg-info/dependency_links.txt
+r2tfm.egg-info/entry_points.txt
+r2tfm.egg-info/requires.txt
+r2tfm.egg-info/top_level.txt
+r2tfm/rtfmlib/cli.py
+r2tfm/rtfmlib/crawler.py
+r2tfm/rtfmlib/parser.py
+r2tfm/rtfmlib/utils.py

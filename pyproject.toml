@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "r2tfm"
+version = "0.1.0"
+dependencies = ["streamlit>=1.18.0"]
+
+[project.scripts]
+r2tfm = "r2tfm.__main__:main"

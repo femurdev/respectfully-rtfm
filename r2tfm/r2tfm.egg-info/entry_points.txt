@@ -1,0 +1,2 @@
+[console_scripts]
+r2tfm = r2tfm.__main__:main
