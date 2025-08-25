@@ -1,4 +1,4 @@
-Contributing
+# Contributing
 
 Thanks for your interest in contributing to r2tfm.
 
@@ -6,7 +6,9 @@ Development setup
 
 1. Clone the repository and install in editable mode:
 
-   python3 -m pip install -e .
+```bash
+python3 -m pip install -e .
+```
 
 2. Run tests (if any) and iterate on code. Editable installs pick up source changes automatically.
 

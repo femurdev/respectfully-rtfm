@@ -1,4 +1,4 @@
-FAQ — Edge cases, limitations, and gotchas
+# FAQ — Edge cases, limitations, and gotchas
 
 This project aims to extract docstrings, inline comments, and function signatures from Python source, but there are several edge cases and limitations to be aware of.
 

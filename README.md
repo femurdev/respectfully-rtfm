@@ -1,4 +1,4 @@
-r2tfm — Python codebase documentation crawler and exporter
+# r2tfm — Python codebase documentation crawler and exporter
 
 Overview
 
@@ -22,7 +22,9 @@ Quick install (editable install)
 
 2. From within the project directory, run:
 
-   python3 -m pip install -e .
+```bash
+python3 -m pip install -e .
+```
 
 This installs the package in editable mode so you can modify the source and use the installed CLI.
 
@@ -32,28 +34,38 @@ If you want to run the CLI entrypoint `r2tfm` (installed via the package) and yo
 
 1. Locate the path to this project’s package directory. For an editable install the package source is the project directory; find the absolute path. Example:
 
-   python3 -c "import os, r2tfm; print(os.path.dirname(r2tfm.__file__))"
+```bash
+python3 -c "import os, r2tfm; print(os.path.dirname(r2tfm.__file__))"
+```
 
 2. Export that path to PYTHONPATH in zsh (replace /path/to/project with the directory printed above):
 
-   export PYTHONPATH="/path/to/project:$PYTHONPATH"
+```bash
+export PYTHONPATH="/path/to/project:$PYTHONPATH"
+```
 
 Running the CLI (zsh)
 
 Once installed and PYTHONPATH set, run the CLI by invoking the console script (entry point) `r2tfm` in zsh:
 
-   r2tfm /path/to/target_project
+```bash
+r2tfm /path/to/target_project
+```
 
 Alternatively, run the module directly with python3:
 
-   python3 -m r2tfm.rtfmlib.cli /path/to/target_project
+```bash
+python3 -m r2tfm.rtfmlib.cli /path/to/target_project
+```
 
 Using the Streamlit web viewer
 
 To run the Streamlit web UI for interactive browsing and exporting Markdown/JSON:
 
-   python3 -m pip install streamlit
-   streamlit run r2tfm/main.py
+```bash
+python3 -m pip install streamlit
+streamlit run r2tfm/main.py
+```
 
 Documentation and usage examples
 

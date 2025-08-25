@@ -1,20 +1,28 @@
-Usage
+# Usage
 
 SITE
 
 The primary and supported use case of this app is the r2tfm command. To use this, simply go to the directory you want to use it in and run:
-  r2tfm
+
+```bash
+r2tfm
+```
+
 Visit [this url](http://localhost:8501) or [this url](http://192.168.1.185:8501)
 
 CLI
 
 After an editable install (see docs/install.md), run the CLI to crawl a project and print JSON output:
 
-   r2tfm /path/to/project
+```bash
+r2tfm /path/to/project
+```
 
 Or invoke the module directly (useful if console scripts are not available):
 
-   python3 -m r2tfm.rtfmlib.cli /path/to/project
+```bash
+python3 -m r2tfm.rtfmlib.cli /path/to/project
+```
 
 Options
 
@@ -24,17 +32,23 @@ Options
 
 Example
 
-   r2tfm ./my_project --max-modules 200
+```bash
+r2tfm ./my_project --max-modules 200
+```
 
 Streamlit web UI
 
 Install Streamlit if you haven't already:
 
-   python3 -m pip install streamlit
+```bash
+python3 -m pip install streamlit
+```
 
 Run the web app (interactive browser UI):
 
-   streamlit run r2tfm/main.py
+```bash
+streamlit run r2tfm/main.py
+```
 
 Exports
 
